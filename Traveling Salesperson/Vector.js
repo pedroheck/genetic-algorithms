@@ -40,7 +40,7 @@ class Vector{
     subNew(v) {                
       var x = this.x - v.x;
       var y = this.y - v.y;
-      return new Vetor(x, y);
+      return new Vector(x, y);
     };
 
     // retorna este vetor após dividí-lo por um valor especificado
@@ -131,7 +131,7 @@ class Vector{
     // checa se dois vetores são idênticos e retorna um booleano
     equals(x, y) {          
         var a, b;                    
-        if (x instanceof Vetor) {       
+        if (x instanceof Vector) {       
             a = x.x || 0;
             b = x.y || 0;
         } else {
@@ -144,7 +144,7 @@ class Vector{
 
     // retorna uma cópia deste vetor
     copy(){
-        return new Vetor(this.x,this.y);   
+        return new Vector(this.x,this.y);   
     }                                        
 
 }
