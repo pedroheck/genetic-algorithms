@@ -1,8 +1,9 @@
-var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+var characters = 'ABCÇDEFGHIJKLMNOPQRSTUVWXYZabcçdefghijklmnopqrstuvwxyz';
 
 var population = [];
-var popSize = 20;
-var word = 'pipoca';
+var fitness = [];
+var popSize = 200;
+var word = 'paralelepipedo';
 
 function generateInitialPop(){
     for(var i = 0; i < popSize; i++){ // Generates each individual
@@ -16,6 +17,23 @@ function generateInitialPop(){
     }
 }
 
-generateInitialPop();
+function calculateFitness(){
+    for(var i = 0; i < population.length; i++){ // Runs through each individual
+        var individual = population[i];
+        var indiv_fitness = 0;
 
-console.log(population);
+        for(var j = 0; j < individual.length; j++){ // Runs through each letter
+            if(individual[j] == word[j]){
+                indiv_fitness++;
+            }
+        }
+
+        indiv_fitness = indiv_fitness / word.length;
+        fitness.push(indiv_fitness.toFixed(5));
+    }
+}
+
+
+
+generateInitialPop();
+calculateFitness();
