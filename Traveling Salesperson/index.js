@@ -17,6 +17,7 @@ var totalCities = 5;
 var order = [];
 
 var population = [];
+var popSize = 100;
 var fitness = [];
 
 var recordDistance = Infinity;
@@ -33,24 +34,17 @@ function setup(){
         order[i] = i; // Creates an array that's just [0, 1, 2, 3, 4...]
 
         c.beginPath();
-        c.arc(v.x, v.y, 1, 0, Math.PI * 2);
+        c.arc(v.x, v.y, 3, 0, Math.PI * 2);
         c.strokeStyle = "rgb(50, 50, 50)";
         c.stroke();
     }
 
-    for (var i = 0; i < 10; i++){
+    for (var i = 0; i < popSize; i++){
         population[i] = order.slice();
         shuffle(population[i], 100);
     }
 
-    for (var i = 0; i < population.length; i++){
-        var d = calcDistance(cities, population[i]);
-        if(d < recordDistance){
-            recordDistance = d;
-            bestEver = population[i];
-        }
-        fitness[i] = d;
-    }
+    
 }
 
 function swap(a, i, j){
@@ -70,6 +64,7 @@ function shuffle(a, num){
 // Calculates total distance between points given their order
 function calcDistance(points, order){
     var sum = 0;
+
     for(var i = 0; i < order.length - 1; i++){
         var cityAIndex = order[i];
         var cityA = points[cityAIndex];
@@ -81,4 +76,19 @@ function calcDistance(points, order){
     return sum;
 }
 
+function draw(){
+    calculateFitness();
+    normalizeFitness();
+    nextGeneration();
+}
+
+// function treatRGB(color){
+//     let cores = color.substring(4, color.length - 1) // remover os caracteres de texto. ex: "rgb(256,20,40)"
+//             .split(',') // retornar um array com os elementos separados por virgula. ex: '256','20','40'
+            
+//     return cores;
+// }
+
+
 setup();
+draw();
