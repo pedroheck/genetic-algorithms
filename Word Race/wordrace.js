@@ -2,8 +2,10 @@ var characters = 'ABCÇDEFGHIJKLMNOPQRSTUVWXYZabcçdefghijklmnopqrstuvwxyz012345
 
 var population = [];
 var fitness = [];
-var popSize = 1000;
-var phrase = 'This phrase is a test. How long will the algorithm take to finish?';
+var popSize = 2000;
+var phrase = 'How long will the algorithm take to finish?';
+
+var running;
 
 function generateInitialPop(){
     for(var i = 0; i < popSize; i++){ // Generates each individual
@@ -51,7 +53,7 @@ function createNextGeneration(){
     for(var i = 0; i < population.length; i++){ // Creates the new population
         var indexA = Math.floor(Math.random() * matingPool.length);
         var indexB = Math.floor(Math.random() * matingPool.length);
-        var child = crossover(matingPool[indexA], matingPool[indexB]);
+        var child = onePointCrossover(matingPool[indexA], matingPool[indexB]);
 
         child = mutate(child);
 
@@ -72,6 +74,22 @@ function crossover(ind1, ind2){
             child += ind2[i];
         }
     }
+    return child;
+}
+
+function onePointCrossover(ind1, ind2){
+    var child = '';
+    var indexPoint = Math.floor(Math.random() * ind1.length);
+
+    for(var i = 0; i < ind1.length; i++){
+        if(i < indexPoint){
+            child += ind1[i];
+        } else {
+            child += ind2[i];
+        }
+    }
+
+    console.log(indexPoint);
     return child;
 }
 
@@ -105,19 +123,27 @@ function getBestIndividual(){
 }
 
 function run(){
+    running = true;
+
     generateInitialPop();
     calculateFitness();
+
     var highestFitness = getHighestFitness();
     var generation = 0;
-    while(highestFitness < 1){
+
+    while(highestFitness < 1 && running == true){
         createNextGeneration();
         highestFitness = getHighestFitness();
         generation++;
         if(generation > 100000){
             break;
         }
-        console.log("Generation: " + generation + " | Best of this generation: " + getBestIndividual() + " | Fitness: " + highestFitness * 100 + "%");
+        console.log("Generation: " + generation + " | Best of this generation: " + getBestIndividual() + " | Fitness: " + (highestFitness * 100).toFixed(2) + "%");
     }
+}
+
+function pause(){
+    running = false;
 }
 
 // run();
