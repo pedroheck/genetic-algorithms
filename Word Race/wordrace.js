@@ -19,7 +19,7 @@ function generateInitialPop(){
 
 function calculateFitness(){
     fitness = [];
-    
+
     for(var i = 0; i < population.length; i++){ // Runs through each individual
         var individual = population[i];
         var indiv_fitness = 0;
@@ -42,11 +42,13 @@ function createNextGeneration(){
 
     for(var i = 0; i < population.length; i++){ // Populates the matingPool according to their fitness
         var num = parseInt((fitness[i] * 100).toFixed(0)) + 1; // The + 1 is to give even the least fit a chance to be selected
+
         for(var j = 0; j < num; j++){
             matingPool.push(population[i]);
         }
     }
 
+    console.log(matingPool);
     for(var i = 0; i < population.length; i++){ // Creates the new population
         var indexA = Math.floor(Math.random() * matingPool.length);
         var indexB = Math.floor(Math.random() * matingPool.length);
@@ -93,6 +95,21 @@ function getHighestFitness(){
     return highest;
 }
 
+function run(){
+    generateInitialPop();
+    calculateFitness();
+    var highestFitness = getHighestFitness();
+    var counter = 0;
+    while(highestFitness < 1){
+        createNextGeneration();
+        highestFitness = getHighestFitness();
+        counter++;
+        if(counter > 100000){
+            break;
+        }
+        console.log(counter);
+    }
+    console.log(population[0]);
+}
 
-generateInitialPop();
-calculateFitness();
+run();
