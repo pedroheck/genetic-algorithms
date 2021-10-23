@@ -2,10 +2,18 @@ var characters = 'ABCÇDEFGHIJKLMNOPQRSTUVWXYZabcçdefghijklmnopqrstuvwxyz012345
 
 var population = [];
 var fitness = [];
-var popSize = 2000;
-var phrase = 'How long will the algorithm take to finish?';
+var popSize = 1000;
+var phrase = document.getElementById("phrase").value;
+var mutationRate = 0.01;
 
 var running;
+
+
+function setPhraseAndRun(){
+    phrase = document.getElementById("phrase").value;
+
+    run();
+}
 
 function generateInitialPop(){
     for(var i = 0; i < popSize; i++){ // Generates each individual
@@ -53,7 +61,7 @@ function createNextGeneration(){
     for(var i = 0; i < population.length; i++){ // Creates the new population
         var indexA = Math.floor(Math.random() * matingPool.length);
         var indexB = Math.floor(Math.random() * matingPool.length);
-        var child = onePointCrossover(matingPool[indexA], matingPool[indexB]);
+        var child = crossover(matingPool[indexA], matingPool[indexB]);
 
         child = mutate(child);
 
@@ -103,7 +111,7 @@ function onePointCrossover(ind1, ind2){
 
 function mutate(individual){
     for(var i = 0; i < individual.length; i++){
-        if(Math.random() < 0.02){ // Gives 2% chance to mutate
+        if(Math.random() < mutationRate){ // Gives 2% chance to mutate
             individual = individual.replace(individual[i], characters[Math.floor(Math.random() * characters.length)]);
         }
     }
@@ -143,15 +151,26 @@ function run(){
         createNextGeneration();
         highestFitness = getHighestFitness();
         generation++;
-        if(generation > 100000){
+        if(generation > 1000000){
             break;
         }
+        updateInfo();
+
         console.log("Generation: " + generation + " | Best of this generation: " + getBestIndividual() + " | Fitness: " + (highestFitness * 100).toFixed(2) + "%");
     }
+
+    document.getElementById("best-individual-text").innerHTML = getBestIndividual();
+    document.getElementById("num-of-generations-text").innerHTML = generation;
 }
 
 function pause(){
     running = false;
 }
 
-// run();
+function updateInfo(){
+    // document.getElementById("best-individual").innerHTML = '';
+
+    var bestIndividualText = getBestIndividual();
+    
+    document.getElementById("best-individual-text").innerHTML = bestIndividualText;
+}

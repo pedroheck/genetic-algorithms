@@ -7,6 +7,32 @@
     <title>Word Race</title>
 </head>
 <body>
+
+    <form onsubmit="Javascript:setPhraseAndRun(); return false">
+        <label for="phrase">Type a target phrase</label>
+        <input type="text" id="phrase" placeholder="This is an example of a target phrase.">
+        
+        <input type="submit" value="Start">
+    </form>
+    <!-- <form>
+        <label for="phrase">Target phrase:</label>
+        <input type="text" id="phrase" name="phrase">
+    </form>
+
+    <button type="button" onclick="run()" style="width: 100px; height: 30px; margin: 5px">Run</button> -->
+
+    <div id="info">
+        <div id="best-individual">
+            <b><p style="display: inline-block">Best individual:</p></b>
+            <p id="best-individual-text" style="display: inline-block"></p>
+        </div>
+
+        <div id="num-of-generations">
+            <b><p style="display: inline-block">Number of generations:</p></b>
+            <p id="num-of-generations-text" style="display: inline-block"></p>
+        </div>
+    </div>
+
     <script type="text/javascript" src="wordrace.js"></script>
 </body>
 </html>
