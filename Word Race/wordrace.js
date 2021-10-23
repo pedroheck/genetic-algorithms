@@ -81,11 +81,21 @@ function onePointCrossover(ind1, ind2){
     var child = '';
     var indexPoint = Math.floor(Math.random() * ind1.length);
 
-    for(var i = 0; i < ind1.length; i++){
-        if(i < indexPoint){
-            child += ind1[i];
-        } else {
-            child += ind2[i];
+    if(Math.random() < 0.5){
+        for(var i = 0; i < ind1.length; i++){
+            if(i < indexPoint){
+                child += ind1[i];
+            } else {
+                child += ind2[i];
+            }
+        }
+    } else{
+        for(var i = 0; i < ind1.length; i++){
+            if(i < indexPoint){
+                child += ind2[i];
+            } else {
+                child += ind1[i];
+            }
         }
     }
     return child;
