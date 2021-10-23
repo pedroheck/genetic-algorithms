@@ -1,16 +1,16 @@
-var characters = 'ABCÇDEFGHIJKLMNOPQRSTUVWXYZ abcçdefghijklmnopqrstuvwxyz';
+var characters = 'ABCÇDEFGHIJKLMNOPQRSTUVWXYZabcçdefghijklmnopqrstuvwxyz0123456789 .,!?:()';
 
 var population = [];
 var fitness = [];
 var popSize = 1000;
-var word = 'Paralelepipedo';
+var phrase = 'This phrase is a test. How long will the algorithm take to finish?';
 
 function generateInitialPop(){
     for(var i = 0; i < popSize; i++){ // Generates each individual
         
         var individual = '';
         
-        for(var j = 0; j < word.length; j++){ // Generates each character in the individual
+        for(var j = 0; j < phrase.length; j++){ // Generates each character in the individual
             individual += characters[Math.floor(Math.random() * characters.length)];
         }
         population.push(individual);
@@ -25,12 +25,12 @@ function calculateFitness(){
         var indiv_fitness = 0;
 
         for(var j = 0; j < individual.length; j++){ // Runs through each letter
-            if(individual[j] == word[j]){
+            if(individual[j] == phrase[j]){
                 indiv_fitness++;
             }
         }
 
-        indiv_fitness = indiv_fitness / word.length;
+        indiv_fitness = indiv_fitness / phrase.length;
         fitness.push(indiv_fitness.toFixed(5));
     }
 }
@@ -48,7 +48,6 @@ function createNextGeneration(){
         }
     }
 
-    console.log(matingPool);
     for(var i = 0; i < population.length; i++){ // Creates the new population
         var indexA = Math.floor(Math.random() * matingPool.length);
         var indexB = Math.floor(Math.random() * matingPool.length);
@@ -95,21 +94,30 @@ function getHighestFitness(){
     return highest;
 }
 
+function getBestIndividual(){
+    var bestIndex = 0;
+    for(var i = 0; i < fitness.length; i++){
+        if(fitness[i] > fitness[bestIndex]){
+            bestIndex = i;
+        }
+    }
+    return population[bestIndex];
+}
+
 function run(){
     generateInitialPop();
     calculateFitness();
     var highestFitness = getHighestFitness();
-    var counter = 0;
+    var generation = 0;
     while(highestFitness < 1){
         createNextGeneration();
         highestFitness = getHighestFitness();
-        counter++;
-        if(counter > 100000){
+        generation++;
+        if(generation > 100000){
             break;
         }
-        console.log(counter);
+        console.log("Generation: " + generation + " | Best of this generation: " + getBestIndividual() + " | Fitness: " + highestFitness * 100 + "%");
     }
-    console.log(population[0]);
 }
 
-run();
+// run();
