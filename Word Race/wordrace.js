@@ -88,8 +88,6 @@ function onePointCrossover(ind1, ind2){
             child += ind2[i];
         }
     }
-
-    console.log(indexPoint);
     return child;
 }
 
