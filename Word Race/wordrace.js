@@ -8,13 +8,6 @@ var mutationRate = 0.01;
 
 var running;
 
-
-function setPhraseAndRun(){
-    phrase = document.getElementById("phrase").value;
-
-    run();
-}
-
 function generateInitialPop(){
     for(var i = 0; i < popSize; i++){ // Generates each individual
         
@@ -43,6 +36,16 @@ function calculateFitness(){
         indiv_fitness = indiv_fitness / phrase.length;
         fitness.push(indiv_fitness.toFixed(5));
     }
+}
+
+function calculatePopFitness(){
+    var totalFitness = 0;
+    for(var i = 0; i < fitness.length; i++){
+        totalFitness += parseFloat(fitness[i]);
+    }
+    totalFitness /= fitness.length;
+
+    return totalFitness;
 }
 
 
@@ -138,45 +141,57 @@ function getBestIndividual(){
     return population[bestIndex];
 }
 
-function run(){
-    running = true;
-
-    generateInitialPop();
-    calculateFitness();
-
-    var highestFitness = getHighestFitness();
-    var generation = 0;
-
-    // setInterval(doesAll(), 10);
-
-    while(highestFitness < 1 && running == true){
-        createNextGeneration();
-        highestFitness = getHighestFitness();
-        generation++;
-        if(generation > 1000000){
-            break;
+function getBestFitness(){
+    var bestIndex = 0;
+    for(var i = 0; i < fitness.length; i++){
+        if(fitness[i] > fitness[bestIndex]){
+            bestIndex = i;
         }
-        updateInfo();
-        console.log(document.getElementById("best-individual-text").textContent);
-        // console.log("Generation: " + generation + " | Best of this generation: " + getBestIndividual() + " | Fitness: " + (highestFitness * 100).toFixed(2) + "%");
     }
-    document.getElementById("num-of-generations-text").innerHTML = generation;
-    // updateInfo();
+    return fitness[bestIndex];
 }
 
 function pause(){
     running = false;
 }
 
-function doesAll(){
-    createNextGeneration();
-    highestFitness = getHighestFitness();
-    updateInfo();
 
-    console.log("Best of this generation: " + getBestIndividual() + " | Fitness: " + (highestFitness * 100).toFixed(2) + "%");
-
-}
+var generation = 0;
 
 function updateInfo(){
     document.getElementById("best-individual-text").textContent = getBestIndividual();
+    document.getElementById("individual-fitness-text").textContent = (getBestFitness() * 100).toFixed(2) + '%';
+    document.getElementById("num-of-generations-text").textContent = generation;
+    document.getElementById("fitness-text").textContent = (calculatePopFitness() * 100).toFixed(2) + '%';
+}
+
+
+
+function animate(){
+    requestAnimationFrame(animate);
+
+    var highestFitness = getHighestFitness();
+
+    if(highestFitness < 1){
+        createNextGeneration();
+        highestFitness = getHighestFitness();
+        generation++;
+
+        updateInfo();
+        // console.log("Generation: " + generation + " | Best of this generation: " + getBestIndividual() + " | Fitness: " + (highestFitness * 100).toFixed(2) + "%");
+    }
+}
+
+function run(){
+    reset();
+    phrase = document.getElementById("phrase").value;
+    generateInitialPop();
+    calculateFitness();
+    animate();
+}
+
+function reset(){
+    population = [];
+    fitness = [];
+    generation = 0;
 }

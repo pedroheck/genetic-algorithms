@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <form onsubmit="Javascript:setPhraseAndRun(); return false">
+    <form onsubmit="Javascript:run(); return false">
         <label for="phrase">Type a target phrase</label>
         <input type="text" id="phrase" placeholder="This is an example of a target phrase.">
         
@@ -17,13 +17,23 @@
     
     <div id="info">
         <div id="best-individual">
-            <b><p style="display: inline-block">Best individual:</p></b>
-            <p id="best-individual-text" style="display: inline-block"></p>
+            <p style="display: inline-block">Best individual:</p>
+            <b><p id="best-individual-text" style="display: inline-block"></p></b>
+        </div>
+
+        <div id="individual-fitness">
+            <p style="display: inline-block">Best individual fitness:</p>
+            <b><p id="individual-fitness-text" style="display: inline-block"></p></b>
+        </div>
+
+        <div id="fitness">
+            <p style="display: inline-block">Population Fitness:</p>
+            <b><p id="fitness-text" style="display: inline-block"></p></b>
         </div>
 
         <div id="num-of-generations">
-            <b><p style="display: inline-block">Number of generations:</p></b>
-            <p id="num-of-generations-text" style="display: inline-block"></p>
+            <p style="display: inline-block">Number of generations:</p>
+            <b><p id="num-of-generations-text" style="display: inline-block"></p></b>
         </div>
     </div>
 
