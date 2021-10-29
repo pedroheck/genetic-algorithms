@@ -1,94 +1,119 @@
-//if(innerWidth<=425){
-    var tela ={width: innerWidth, height: innerHeight - 8}
-//}else{
-    //var tela = {width: innerWidth - 500, height: innerHeight - 8}
-//}
+var tela ={width: innerWidth, height: innerHeight - 8}
+
 const canvas = document.querySelector("canvas");
 canvas.width = tela.width;
 canvas.height = tela.height;
 
 const c = canvas.getContext('2d');
 
+var cities = []; // An array of points (vectors (x, y)) that represent the cities
+var numCities = 5; // Number of cities
 
-
-var cities = [];
-var totalCities = 5;
-
-var order = [];
-
-var population = [];
-var popSize = 100;
+var popSize = 100; // Number of individuals in each generation
+var population = []; // A population consists of individuals with genes that say the order in which the cities should be visited
 var fitness = [];
 
-var recordDistance = Infinity;
+var bestDistance = Infinity;
 var bestEver;
+var worstDistance = 0;
 
-var statusP;
+function spawnCities(){
+    for(var i = 0; i < numCities; i++){
+        var x = Math.random() * canvas.width;
+        var y = Math.random() * canvas.height;
 
-function setup(){
-    
-    var order = [];
-    for(var i = 0; i < totalCities; i++){
-        var v = new Vector(Math.random() * canvas.width, Math.random() * canvas.height);
-        cities[i] = v;
-        order[i] = i; // Creates an array that's just [0, 1, 2, 3, 4...]
+        var city = new Vector(x, y);
+        cities.push(city);
+    }
 
+    drawCities();
+}
+
+function drawCities(){
+    for(var i = 0; i < cities.length; i++){
         c.beginPath();
-        c.arc(v.x, v.y, 3, 0, Math.PI * 2);
-        c.strokeStyle = "rgb(50, 50, 50)";
+        c.arc(cities[i].x, cities[i].y, 3, 0, 2 * Math.PI);
         c.stroke();
     }
-
-    for (var i = 0; i < popSize; i++){
-        population[i] = order.slice();
-        shuffle(population[i], 100);
-    }
-
-    
 }
 
-function swap(a, i, j){
-    var temp = a[i];
-    a[i] = a[j];
-    a[j] = temp;
-}
+function generateInitialPop(){
+    var order = Array.from({length: numCities}, (_, i) => i); // [0, 1, 2, 3, ... numCities]
+    console.log(order)
 
-function shuffle(a, num){
-    for(var i = 0; i < num; i++){
-        var indexA = Math.floor(Math.random() * a.length);
-        var indexB = Math.floor(Math.random() * a.length);
-        swap(a, indexA, indexB);
+    while(population.length < popSize){
+        order = shuffle(order); // Shuffles randomly [3, 1, 4, 0...]
+        population.push(order.slice()); // Each individual is now this random order
     }
 }
 
-// Calculates total distance between points given their order
-function calcDistance(points, order){
-    var sum = 0;
+function shuffle(array){ // Function that shuffles an array
+    var m = array.length, t, i;
 
+    while(m){ // While there are still elements to shuffle
+        // Pick a remaining element
+        i = Math.floor(Math.random() * m--); // "m--" is to automatically subtract 1 from m everytime we use it
+
+        // Now swap the picket element with the current element
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+
+    return array;
+}
+
+function calculateTotalDistance(points, order){ // Calculates the sum of the distances between cities A and B, B and C, C and D ... in order = [A, B, C, ...]
+    var totalDistance = 0;
     for(var i = 0; i < order.length - 1; i++){
+
         var cityAIndex = order[i];
         var cityA = points[cityAIndex];
         var cityBIndex = order[i + 1];
         var cityB = points[cityBIndex];
-        var d = cityA.dist(cityB);
-        sum += d;
+
+        var d = distanceFrom(cityA, cityB);
+        totalDistance += d;
     }
-    return sum;
+
+    return totalDistance;
 }
 
-function draw(){
-    calculateFitness();
+function distanceFrom(v1, v2){
+    return Math.sqrt(Math.pow(v2.y - v1.y, 2) + Math.pow(v2.x - v1.x, 2));
+}
+
+function calculateFitness(){
+    for(var i = 0; i < population.length; i++){
+        var totalDistance = calculateTotalDistance(cities, population[i]);
+        if(totalDistance < bestDistance){
+            bestDistance = totalDistance;
+            bestEver = population[i];
+        }
+        if(totalDistance > worstDistance){
+            worstDistance = totalDistance;
+        }
+        fitness[i] = 1 / totalDistance;
+    }
+
     normalizeFitness();
-    nextGeneration();
 }
 
-// function treatRGB(color){
-//     let cores = color.substring(4, color.length - 1) // remover os caracteres de texto. ex: "rgb(256,20,40)"
-//             .split(',') // retornar um array com os elementos separados por virgula. ex: '256','20','40'
-            
-//     return cores;
-// }
+function normalizeFitness(){
+    var sum = 0;
+    for (var i = 0; i < fitness.length; i++){
+        sum += fitness[i];
+    }
+    for (var i = 0; i < fitness.length; i++){
+        fitness[i] = fitness[i] / sum;
+    }
+}
+
+function createNextGeneration(){
+
+}
 
 
-setup();
-draw();
+spawnCities();
+generateInitialPop();
+calculateFitness();
