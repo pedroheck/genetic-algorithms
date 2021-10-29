@@ -5,4 +5,15 @@ body{
 
 #info{
     margin-top: 70px;
+    display: inline-block;
+    padding: 10px;
+}
+
+.info-line{
+    display: inline-block;
+}
+
+#pop-list{
+    float: right;
+    width: 40%;
 }

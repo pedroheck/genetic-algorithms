@@ -2,7 +2,7 @@ var characters = 'ABCÇDEFGHIJKLMNOPQRSTUVWXYZabcçdefghijklmnopqrstuvwxyz012345
 
 var population = [];
 var fitness = [];
-var popSize = 2000;
+var popSize = 1000;
 var phrase = document.getElementById("phrase").value;
 var mutationRate = 0.01;
 
@@ -163,6 +163,20 @@ function updateInfo(){
     document.getElementById("individual-fitness-text").textContent = (getBestFitness() * 100).toFixed(2) + '%';
     document.getElementById("num-of-generations-text").textContent = generation;
     document.getElementById("fitness-text").textContent = (calculatePopFitness() * 100).toFixed(2) + '%';
+
+    document.getElementById("pop-list").textContent = '';
+
+    // Population list
+    for(var i = 0; i < population.length; i++){
+        var instance = document.createElement("div");
+        var text = document.createTextNode(population[i]);
+        instance.appendChild(text);
+        var element = document.getElementById("pop-list");
+        element.appendChild(instance);
+        // var instance = '<div style="height: 10px" class="list-line" id="line-' + i + '"></div>'
+        // document.getElementById("pop-list").appendChild(instance);
+        // document.getElementById("line-" + i).textContent = 'teste';
+    }
 }
 
 
