@@ -7,9 +7,9 @@ canvas.height = tela.height;
 const c = canvas.getContext('2d');
 
 var cities = []; // An array of points (vectors (x, y)) that represent the cities
-var numCities = 5; // Number of cities
+var numCities = 10; // Number of cities
 
-var popSize = 100; // Number of individuals in each generation
+var popSize = 10; // Number of individuals in each generation
 var population = []; // A population consists of individuals with genes that say the order in which the cities should be visited
 var fitness = [];
 
@@ -39,7 +39,6 @@ function drawCities(){
 
 function generateInitialPop(){
     var order = Array.from({length: numCities}, (_, i) => i); // [0, 1, 2, 3, ... numCities]
-    console.log(order)
 
     while(population.length < popSize){
         order = shuffle(order); // Shuffles randomly [3, 1, 4, 0...]
@@ -65,16 +64,29 @@ function shuffle(array){ // Function that shuffles an array
 
 function calculateTotalDistance(points, order){ // Calculates the sum of the distances between cities A and B, B and C, C and D ... in order = [A, B, C, ...]
     var totalDistance = 0;
+    var cityAIndex;
+    var cityA;
+    var cityBIndex;
+    var cityB;
+
     for(var i = 0; i < order.length - 1; i++){
 
-        var cityAIndex = order[i];
-        var cityA = points[cityAIndex];
-        var cityBIndex = order[i + 1];
-        var cityB = points[cityBIndex];
+        cityAIndex = order[i];
+        cityA = points[cityAIndex];
+        cityBIndex = order[i + 1];
+        cityB = points[cityBIndex];
 
         var d = distanceFrom(cityA, cityB);
         totalDistance += d;
     }
+
+     // The last city should be the same as the first one, for the Traveling Salesman problem requires a cyclical path
+    var lastCityIndex = order[order.length - 1]
+    var lastCity = points[lastCityIndex];
+    var firstCityIndex = order[0];
+    var firstCity = points[firstCityIndex];
+
+    totalDistance += distanceFrom(lastCity, firstCity);
 
     return totalDistance;
 }
@@ -109,9 +121,24 @@ function normalizeFitness(){
     }
 }
 
+function getBestIndividual(){
+    var bestFitness = Infinity;
+    var bestFitnessIndex;
+    for(var i = 0; i < fitness.length; i++){
+        if(fitness[i] < bestFitness){
+            bestFitness = fitness[i];
+            bestFitnessIndex = i;
+        }
+    }
+
+    return population[bestFitnessIndex];
+}
+
 function createNextGeneration(){
 
 }
+
+
 
 
 spawnCities();
