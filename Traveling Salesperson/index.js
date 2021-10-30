@@ -7,15 +7,18 @@ canvas.height = tela.height;
 const c = canvas.getContext('2d');
 
 var cities = []; // An array of points (vectors (x, y)) that represent the cities
-var numCities = 10; // Number of cities
+var numCities = 50; // Number of cities
 
-var popSize = 10; // Number of individuals in each generation
+var popSize = 1000; // Number of individuals in each generation
 var population = []; // A population consists of individuals with genes that say the order in which the cities should be visited
 var fitness = [];
 
 var bestDistance = Infinity;
 var bestEver;
+var currentBest;
 var worstDistance = 0;
+
+var mutationRate = 0.01;
 
 function spawnCities(){
     for(var i = 0; i < numCities; i++){
@@ -42,8 +45,10 @@ function generateInitialPop(){
 
     while(population.length < popSize){
         order = shuffle(order); // Shuffles randomly [3, 1, 4, 0...]
-        population.push(order.slice()); // Each individual is now this random order
+        population.push(new Individual(order.slice())); // Each individual is now this random order
     }
+
+    calculateFitness();
 }
 
 function shuffle(array){ // Function that shuffles an array
@@ -96,16 +101,25 @@ function distanceFrom(v1, v2){
 }
 
 function calculateFitness(){
+    var currentRecord = Infinity;
     for(var i = 0; i < population.length; i++){
-        var totalDistance = calculateTotalDistance(cities, population[i]);
+        var totalDistance = calculateTotalDistance(cities, population[i].order);
+
         if(totalDistance < bestDistance){
             bestDistance = totalDistance;
             bestEver = population[i];
         }
+        if(totalDistance < currentRecord){
+            currentRecord = totalDistance;
+            currentBest = population[i];
+        }
+
         if(totalDistance > worstDistance){
             worstDistance = totalDistance;
         }
+
         fitness[i] = 1 / totalDistance;
+        population[i].fitness = fitness[i];
     }
 
     normalizeFitness();
@@ -118,14 +132,15 @@ function normalizeFitness(){
     }
     for (var i = 0; i < fitness.length; i++){
         fitness[i] = fitness[i] / sum;
-    }
+        population[i].fitness = fitness[i];
+    }    
 }
 
 function getBestIndividual(){
-    var bestFitness = Infinity;
+    var bestFitness = 0;
     var bestFitnessIndex;
     for(var i = 0; i < fitness.length; i++){
-        if(fitness[i] < bestFitness){
+        if(fitness[i] > bestFitness){
             bestFitness = fitness[i];
             bestFitnessIndex = i;
         }
@@ -134,13 +149,127 @@ function getBestIndividual(){
     return population[bestFitnessIndex];
 }
 
-function createNextGeneration(){
+function nextGeneration() {
+    var newPopulation = [];
+    for (var i = 0; i < population.length; i++) {
+        var orderA = tournamentSelection();
+        var orderB = tournamentSelection();
+        // var orderA = pickOne(population, fitness);
+        // var orderB = pickOne(population, fitness);
+        var order = crossOver(orderA, orderB);
+        mutate(order);
+        newPopulation[i] = new Individual(order);
+    }
+    population = newPopulation;
+    calculateFitness();
+}
 
+function pickOne(list, prob) {
+    var index = 0;
+    var r = Math.random(); // Random number between 0 and 1
+
+    while (r > 0) {
+        r = r - prob[index];
+        index++;
+    }
+    index--;
+    return new Individual(list[index].order.slice());
+}
+
+function tournamentSelection(){
+    var tournamentSize = 8;
+    var bestIndex = 0;
+    for(var i = 0; i < tournamentSize; i++){
+        var randomIndex = Math.floor(Math.random() * population.length);
+        // bestIndex = population[randomIndex].fitness > population[bestIndex].fitness ? randomIndex : bestIndex;
+        if(fitness[randomIndex] > fitness[bestIndex]){
+            bestIndex = randomIndex;
+        }
+    }
+    // console.log(bestIndex);
+    return new Individual(population[bestIndex].order.slice());
+}
+
+function swap(a, i, j) {
+    var temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+}
+
+function mutate(order) {
+    for (var i = 0; i < numCities; i++) {
+        if (Math.random() < mutationRate) {
+            var indexA = Math.floor(Math.random() * order.length);
+            var indexB = (indexA + 1) % numCities;
+            swap(order, indexA, indexB);
+        }
+    }
 }
 
 
+function crossOver(parentA, parentB) {
+    var start = Math.floor(Math.random() * parentA.order.length);
+    // console.log("start: ", start);
+    var end = Math.floor(Math.random() * start + parentA.order.length);
+    // console.log("end: ", end);
+    var neworder = parentA.order.slice(start, end);
+    // console.log("new order: ", neworder);
+    // var left = totalCities - neworder.length;
+    for (var i = 0; i < parentB.order.length; i++) {
+      var city = parentB.order[i];
+      if (!neworder.includes(city)) { // only adds city if it is not already in the new order
+        neworder.push(city);
+      }
+    }
+    return neworder;
+}
 
+function drawBest(){
+    c.clearRect(0, 0, canvas.width, canvas.height);
+
+    var best = getBestIndividual();
+    var order = best.order;
+
+    c.beginPath();
+    c.strokeStyle = "black";
+    c.lineWidth = 1;
+    c.moveTo(cities[order[0]].x, cities[order[0]].y);
+    for (var i = 1; i < order.length; i++) {
+        c.lineTo(cities[order[i]].x, cities[order[i]].y);
+    }
+    c.lineTo(cities[order[0]].x, cities[order[0]].y); // Draws the last line back to the first city
+    c.stroke();
+}
+
+function drawBestEver(){
+    c.clearRect(0, 0, canvas.width, canvas.height);
+
+    var order = bestEver.order;
+
+    c.beginPath();
+    c.strokeStyle = "blue";
+    c.lineWidth = 3;
+    c.moveTo(cities[order[0]].x, cities[order[0]].y);
+    for (var i = 1; i < order.length; i++) {
+        c.lineTo(cities[order[i]].x, cities[order[i]].y);
+    }
+    c.lineTo(cities[order[0]].x, cities[order[0]].y); // Draws the last line back to the first city
+    c.stroke();
+}
+
+function run(){
+    nextGeneration();
+    // drawBest();
+    drawBestEver();
+    drawCities();
+    setTimeout(run, 0);
+    console.log("best distance -> ", bestDistance);
+}
+
+function pause(){
+    clearTimeout(run);
+}
 
 spawnCities();
 generateInitialPop();
-calculateFitness();
+run();
