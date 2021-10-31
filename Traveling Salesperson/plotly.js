@@ -1,8 +1,14 @@
-function plot(distData) {
+function plot(plotData) {
   var distance = {
-    x: gen,
-    y: distData,
-    type: 'scatter'
+    x: plotData[1],
+    y: plotData[0],
+    type: 'scatter',
+    line: {
+      shape: 'spline',
+    },
+    marker: {
+      color: 'rgb(22, 179, 172)'
+    }
   };
 
   var layout = {
@@ -11,7 +17,7 @@ function plot(distData) {
       title: 'Generations'
     },
     yaxis: {
-      title: 'Distance'
+      title: 'Total Path Distance'
     }
   };
 
@@ -20,11 +26,7 @@ function plot(distData) {
 
   var data = [distance];
 
-  Plotly.newPlot('chart', data, layout, {
-    yaxis: {
-      range: [0, distData]
-    }
-  });
+  Plotly.newPlot('chart', data, layout);
   
   
   

@@ -7,14 +7,13 @@ canvas.height = tela.height * 0.65;
 const c = canvas.getContext('2d');
 
 var cities = []; // An array of points (vectors (x, y)) that represent the cities
-var numCities = 70; // Number of cities
+var numCities = 100; // Number of cities
 
 var popSize = 1000; // Number of individuals in each generation
 var population = []; // A population consists of individuals with genes that say the order in which the cities should be visited
 var fitness = [];
 
 var bestDistance = Infinity;
-var bestDistanceArray = [];
 var bestEver;
 var currentBest;
 var worstDistance = 0;
@@ -23,6 +22,8 @@ var mutationRate = 0.01;
 
 var isPaused = false;
 var gen = 0;
+
+var plotData = [[],[]];
 
 function spawnCities(){
     for(var i = 0; i < numCities; i++){
@@ -112,7 +113,6 @@ function calculateFitness(){
 
         if(totalDistance < bestDistance){
             bestDistance = totalDistance;
-            bestDistanceArray.push(bestDistance);
             bestEver = population[i];
         }
         if(totalDistance < currentRecord){
@@ -253,7 +253,7 @@ function drawBestEver(){
     var order = bestEver.order;
 
     c.beginPath();
-    c.strokeStyle = "blue";
+    c.strokeStyle = "rgb(22, 179, 172)";
     c.lineWidth = 3;
     c.moveTo(cities[order[0]].x, cities[order[0]].y);
     for (var i = 1; i < order.length; i++) {
@@ -273,17 +273,39 @@ function animate(){
     drawBestEver();
     drawCities();
     // updateInfo();
-    plot(bestDistanceArray);
 }
 
 function pause(){
-    isPaused = !isPaused;
+    isPaused = true;
+}
+
+function unpause(){
+    isPaused = false;
+    animate();
 }
 
 function updateInfo(){
     document.getElementById("best").textContent = "Best Distance yet: " + bestDistance.toFixed(1);
 }
 
+function getData(){
+    plotData[0].push(bestDistance);
+    plotData[1].push(gen);
+
+    return plotData;
+}
+
+function sendData(){
+    setInterval(function(){
+        plot(getData());
+    }, 300);
+}
+
+function start(){
+    animate();
+    sendData();
+}
+
 spawnCities();
 generateInitialPop();
-animate();
+start();
