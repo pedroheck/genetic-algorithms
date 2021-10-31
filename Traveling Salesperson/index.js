@@ -1,26 +1,28 @@
-// var tela ={width: innerWidth, height: innerHeight - 8}
+var tela ={width: innerWidth, height: innerHeight - 8}
 
 const canvas = document.querySelector("canvas");
-// canvas.width = tela.width * 0.7;
-// canvas.height = tela.height;
+canvas.width = tela.width;
+canvas.height = tela.height * 0.65;
 
 const c = canvas.getContext('2d');
 
 var cities = []; // An array of points (vectors (x, y)) that represent the cities
-var numCities = 100; // Number of cities
+var numCities = 70; // Number of cities
 
-var popSize = 1200; // Number of individuals in each generation
+var popSize = 1000; // Number of individuals in each generation
 var population = []; // A population consists of individuals with genes that say the order in which the cities should be visited
 var fitness = [];
 
 var bestDistance = Infinity;
+var bestDistanceArray = [];
 var bestEver;
 var currentBest;
 var worstDistance = 0;
 
-var mutationRate = 0.02;
+var mutationRate = 0.01;
 
 var isPaused = false;
+var gen = 0;
 
 function spawnCities(){
     for(var i = 0; i < numCities; i++){
@@ -110,6 +112,7 @@ function calculateFitness(){
 
         if(totalDistance < bestDistance){
             bestDistance = totalDistance;
+            bestDistanceArray.push(bestDistance);
             bestEver = population[i];
         }
         if(totalDistance < currentRecord){
@@ -264,11 +267,13 @@ function animate(){
     if(!isPaused){
         requestAnimationFrame(animate);
     }
+    gen++;
     nextGeneration();
     drawBest();
     drawBestEver();
     drawCities();
-    updateInfo();
+    // updateInfo();
+    plot(bestDistanceArray);
 }
 
 function pause(){

@@ -6,21 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 
+    
     <script type="text/javascript" src="Vector.js"></script>
     <script type="text/javascript" src="Individual.js"></script>
+    <script type="text/javascript" src="plotly.js"></script>
     <!-- <script type="text/javascript" src="ga.js"></script> -->
 </head>
 <body>
-    <canvas width="1200" height="500"></canvas>
-    <div id="info">
+    <canvas></canvas>
+    <!-- <div id="info">
         <p id="info-p">
             <span id="generation"></span>
             <span id="best"></span>
             <span id="worst"></span>
         </p>
-    </div>
+    </div> -->
 
+    <div id="chart-container">
+        <div id="chart">
+
+        </div>
+    </div>
+    
+
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script type="text/javascript" src="index.js"></script>
-    <script type="text/javascript" src="plotly.js"></script>
+    
 </body>
 </html>
