@@ -25,6 +25,19 @@ var gen = 0;
 
 var plotData = [[],[]];
 
+function setNumCities(){
+    cities.length = 0;
+    for(var i = 0; i < numCities; i++){
+        var x = Math.random() * (canvas.width - 100) + 50;
+        var y = Math.random() * (canvas.height - 70) + 35;
+
+        var city = new Vector(x, y);
+        cities.push(city);
+    }
+
+    drawCitiesInit();
+}
+
 function spawnCities(){
     for(var i = 0; i < numCities; i++){
         var x = Math.random() * (canvas.width - 100) + 50;
@@ -34,7 +47,17 @@ function spawnCities(){
         cities.push(city);
     }
 
-    drawCities();
+    drawCitiesInit();
+}
+
+function drawCitiesInit(){
+    c.clearRect(0, 0, canvas.width, canvas.height);
+    for(var i = 0; i < cities.length; i++){
+        c.beginPath();
+        c.strokeStyle = "black";
+        c.arc(cities[i].x, cities[i].y, 3, 0, 2 * Math.PI);
+        c.stroke();
+    }
 }
 
 function drawCities(){
@@ -302,10 +325,14 @@ function sendData(){
 }
 
 function start(){
+    document.getElementById("input").classList.add("d-none");
+    document.getElementById("startBtn").classList.add("d-none");
+    // setNumCities();
+    generateInitialPop();
     animate();
     sendData();
 }
 
-spawnCities();
-generateInitialPop();
-start();
+// spawnCities();
+
+// start();
