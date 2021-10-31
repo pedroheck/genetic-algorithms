@@ -1,0 +1,17 @@
+body{
+    font-family: monospace;
+}
+
+canvas{
+    display: inline-block;
+    height: 500px;
+}
+
+#info{
+    float: right;
+    width: 50px;
+}
+
+#info-p{
+    display: inline-block;
+}

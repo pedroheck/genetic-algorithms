@@ -1,15 +1,15 @@
-var tela ={width: innerWidth, height: innerHeight - 8}
+// var tela ={width: innerWidth, height: innerHeight - 8}
 
 const canvas = document.querySelector("canvas");
-canvas.width = tela.width;
-canvas.height = tela.height;
+// canvas.width = tela.width * 0.7;
+// canvas.height = tela.height;
 
 const c = canvas.getContext('2d');
 
 var cities = []; // An array of points (vectors (x, y)) that represent the cities
-var numCities = 50; // Number of cities
+var numCities = 100; // Number of cities
 
-var popSize = 1000; // Number of individuals in each generation
+var popSize = 1200; // Number of individuals in each generation
 var population = []; // A population consists of individuals with genes that say the order in which the cities should be visited
 var fitness = [];
 
@@ -18,12 +18,14 @@ var bestEver;
 var currentBest;
 var worstDistance = 0;
 
-var mutationRate = 0.01;
+var mutationRate = 0.02;
+
+var isPaused = false;
 
 function spawnCities(){
     for(var i = 0; i < numCities; i++){
-        var x = Math.random() * canvas.width;
-        var y = Math.random() * canvas.height;
+        var x = Math.random() * (canvas.width - 100) + 50;
+        var y = Math.random() * (canvas.height - 70) + 35;
 
         var city = new Vector(x, y);
         cities.push(city);
@@ -35,6 +37,7 @@ function spawnCities(){
 function drawCities(){
     for(var i = 0; i < cities.length; i++){
         c.beginPath();
+        c.strokeStyle = "black";
         c.arc(cities[i].x, cities[i].y, 3, 0, 2 * Math.PI);
         c.stroke();
     }
@@ -85,7 +88,7 @@ function calculateTotalDistance(points, order){ // Calculates the sum of the dis
         totalDistance += d;
     }
 
-     // The last city should be the same as the first one, for the Traveling Salesman problem requires a cyclical path
+     // The last city should be the same as the first one, for the Travelling Salesman problem requires a cyclical path
     var lastCityIndex = order[order.length - 1]
     var lastCity = points[lastCityIndex];
     var firstCityIndex = order[0];
@@ -231,7 +234,7 @@ function drawBest(){
     var order = best.order;
 
     c.beginPath();
-    c.strokeStyle = "black";
+    c.strokeStyle = "red";
     c.lineWidth = 1;
     c.moveTo(cities[order[0]].x, cities[order[0]].y);
     for (var i = 1; i < order.length; i++) {
@@ -242,7 +245,7 @@ function drawBest(){
 }
 
 function drawBestEver(){
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    // c.clearRect(0, 0, canvas.width, canvas.height);
 
     var order = bestEver.order;
 
@@ -257,19 +260,25 @@ function drawBestEver(){
     c.stroke();
 }
 
-function run(){
+function animate(){
+    if(!isPaused){
+        requestAnimationFrame(animate);
+    }
     nextGeneration();
-    // drawBest();
+    drawBest();
     drawBestEver();
     drawCities();
-    setTimeout(run, 0);
-    console.log("best distance -> ", bestDistance);
+    updateInfo();
 }
 
 function pause(){
-    clearTimeout(run);
+    isPaused = !isPaused;
+}
+
+function updateInfo(){
+    document.getElementById("best").textContent = "Best Distance yet: " + bestDistance.toFixed(1);
 }
 
 spawnCities();
 generateInitialPop();
-run();
+animate();
